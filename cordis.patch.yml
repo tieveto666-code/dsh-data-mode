@@ -1,0 +1,13 @@
+# dsh-data-mode host patch
+#
+# Isolation contract (native presets must stay untouched):
+# - Do NOT replace the agent-presets roster row. That row owns the deployment
+#   default (standard) and the shipped roster; a replacement would fight the
+#   launcher overlay and could change which preset a nameless session gets.
+# - Do NOT insert tool-data (or any SQL tool) here. A host insert is visible
+#   to every native agent preset.
+# - This layer only mounts the registrar. It copies a user preset into
+#   $DSH_HOME/.agent-presets/dsh-data when missing, and never overwrites.
+- insert:
+    - id: dsh-data-mode-register
+      name: dsh-data-mode

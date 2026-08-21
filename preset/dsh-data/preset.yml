@@ -1,0 +1,2 @@
+name: 数据模式
+description: 用于基于数据源的智能问数与分析：支持连接 PostgreSQL / MySQL / SQLite、上传 CSV / XLSX、探查 schema、预览样例、只读 SQL，并给出带口径的结论。

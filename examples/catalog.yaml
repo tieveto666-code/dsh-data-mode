@@ -1,0 +1,37 @@
+# Future settings UI / composer 数据源按钮 writes this file. The Agent only reads it.
+# Locations:
+#   $DSH_HOME/data-mode/catalog.yaml
+#   <workspace>/.dsh/data-mode/catalog.yaml  (same id overrides home)
+#
+# If both are missing or sources is empty, data mode scans the workspace
+# for *.csv / *.xlsx / *.parquet (implicit source id: workspace-files).
+sources:
+  - id: workspace-files
+    type: duckdb-files
+    origin: workspace
+    label: 工作区 CSV / XLSX
+    workspaceGlobs:
+      - "**/*.csv"
+      - "**/*.xlsx"
+      - "**/*.parquet"
+    readonly: true
+  # Uploaded table (composer 数据源按钮 → 上传数据表)
+  # - id: upload-sales
+  #   type: duckdb-files
+  #   origin: upload
+  #   label: 销售表
+  #   files:
+  #     - .dsh/data-mode/uploads/upload-sales/sales.csv
+  #   readonly: true
+  # Connected database (composer 数据源按钮 → 连接数据库)
+  # Password is NOT stored here; it lives in $DSH_HOME/data-mode/secrets.yaml
+  # - id: warehouse
+  #   type: postgres
+  #   origin: database
+  #   label: 只读仓
+  #   host: 127.0.0.1
+  #   port: 5432
+  #   database: analytics
+  #   user: reader
+  #   credentialRef: data-mode:warehouse
+  #   readonly: true

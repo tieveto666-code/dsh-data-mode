@@ -1,0 +1,4 @@
+export const MAX_KNOWLEDGE_KEY = 100
+export const MAX_KNOWLEDGE_VALUE = 1000
+export const MAX_KNOWLEDGE_ENTRIES = 200
+export const KNOWLEDGE_PAGE_SIZE = 10

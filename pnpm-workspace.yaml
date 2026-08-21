@@ -1,0 +1,2 @@
+allowBuilds:
+  duckdb: set this to true or false

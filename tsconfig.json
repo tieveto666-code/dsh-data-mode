@@ -1,0 +1,28 @@
+{
+  "compilerOptions": {
+    "target": "ES2023",
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
+    "strict": true,
+    "skipLibCheck": true,
+    "declaration": true,
+    "allowImportingTsExtensions": true,
+    "noEmit": true,
+    "rootDir": "src",
+    "types": ["node"]
+  },
+    "include": [
+      "src/index.ts",
+      "src/install-preset.ts",
+      "src/isolation-contract.ts",
+      "src/sql-guard.ts",
+      "src/session-state.ts",
+      "src/paths.ts",
+      "src/workspace-files.ts",
+      "src/catalog/**/*.ts",
+      "src/catalog-reader.ts",
+      "src/data-source-types.ts",
+      "src/duckdb-engine.ts",
+      "src/duckdb-shim.d.ts"
+    ]
+}
