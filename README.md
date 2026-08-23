@@ -6,6 +6,20 @@ Connect PostgreSQL, MySQL, or SQLite, or upload CSV / Excel files. Ask questions
 
 The plugin is meant for **stock DSH**. It does not change the built-in Standard, PTC, Minimal, or Creative presets, and those sessions never see the SQL tools. New chats still default to Standard Mode.
 
+## Preview
+
+Data Mode answering with a knowledge-defined metric:
+
+![Data Mode answer using business knowledge](./1.png)
+
+Register and select a data source, then preview tables:
+
+![Data source registry and table preview](./2.png)
+
+Maintain per-source knowledge (names, descriptions, BM25 recall):
+
+![Knowledge management for a data source](./3.png)
+
 ## Why this exists
 
 DSH is strong at coding agents. Data Mode is for a different job: **ask your own tables questions without leaving the conversation**, and without giving the model write access to the database.
