@@ -1,7 +1,7 @@
 {
   "name": "dsh-data-mode",
   "version": "0.1.0",
-  "description": "DeepSeek Harness 数据模式：只读问数 Agent 预设。安装后不改标准/PTC/极简/创造，也不把工具挂到 host。",
+  "description": "DSH 数据模式插件：在原版 DeepSeek Harness 上增加只读问数。连接数据库或上传 CSV/Excel，用自然语言查数。不改标准/PTC/极简/创造。",
   "type": "module",
   "license": "MIT",
   "engines": {
@@ -43,6 +43,7 @@
   "scripts": {
     "build": "tsdown",
     "prepare": "tsdown",
+    "pack:release": "npm pack",
     "test": "vitest run",
     "typecheck": "tsc --noEmit"
   },

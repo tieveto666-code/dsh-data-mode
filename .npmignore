@@ -1,0 +1,14 @@
+# npm pack must not inherit .gitignore, otherwise compiled lib/ is omitted.
+node_modules/
+.pnpm-store/
+coverage/
+src/
+tests/
+*.tsbuildinfo
+.DS_Store
+tsconfig.json
+tsdown.config.ts
+vitest.config.ts
+pnpm-lock.yaml
+pnpm-workspace.yaml
+package-lock.json

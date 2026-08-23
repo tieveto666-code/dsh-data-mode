@@ -1,102 +1,106 @@
 # dsh-data-mode
 
-DeepSeek Harness **数据模式**：只读问数 Agent 预设。可单独开源安装，**不改 dsh 核心**，也不污染原生预设。
+## 项目描述
 
-## 隔离保证（不会影响原生模式）
+**dsh-data-mode** 是 DeepSeek Harness（DSH）的 **数据模式插件**。安装后会多一种会话类型「数据模式」：连接 PostgreSQL / MySQL / SQLite，或上传 CSV / Excel，用自然语言做**只读问数**（看表结构、预览数据、跑查询 SQL）。也可以为每个数据源维护业务口径知识，问数时自动带上。
 
-安装这个包 **不会**：
+本插件给 **原版 DSH** 使用，不修改标准 / PTC / 极简 / 创造四种原版模式，也不会让那些模式看到问数工具。新建会话默认仍是标准模式。
 
-- 修改 `agent-presets.default`（新建会话默认仍是 **标准模式**）
-- patch host 上的 `id: agent-presets` 行
-- 在 host / profile 层注册 `run_sql` / `list_data_sources`（标准、PTC、极简、创造看不到这些工具）
-- 覆盖你已经有的预设目录
-- 占用 id `data`
+适合：已经在用 DSH 网页版、希望在对话里查自己的库或表格、又不想改 DSH 源码的人。
 
-安装 **只会**：
+GitHub 仓库简介（创建仓库时粘贴到 Description）：
 
-- 在 web profile 里挂一个 **registrar**（不注册任何模型工具；web 下额外挂数据源管理 HTTP）
-- 若 `$DSH_HOME/.agent-presets/dsh-data` 不存在，则复制一份用户预设进去
-- 只有新建会话并 **选「数据模式」** 时，才会挂载问数工具、DuckDB，以及输入框里的数据源按钮
+> DSH 数据模式插件：原版 DeepSeek Harness 上增加只读问数。连接数据库或上传 CSV/Excel，用自然语言查数。不改标准/PTC/极简/创造。
 
-预设 id 是 `dsh-data`，界面名是「数据模式」。原生 id `standard` / `code` / `minimal` / `cordis` 不会被改、删、覆盖。卸载不影响原生模式。
+## 要不要把「输入框空位」一起打包？
 
-## 安装
+**不要。** 那几处改动在 DSH 核心里（`InputBar.tsx` / `slots.ts`），不是这个插件。把整个 custom dsh 推上去，别人无法用 `dsh plugin add` 安装，还会把整份 Harness 源码泄露出去。
 
-优先用 **带 `lib/` 的 tarball / npm 包**，这样不必为 `prepare`（tsdown）开构建脚本。
+数据源按钮怎么出现：
+
+1. **宿主已经开了专用空位** `conversation.input.datasource`（你们的 custom dsh）：按钮在「+」和权限下拉中间。
+2. **官方原版 DSH**（没有这个空位）：插件改挂到原版自带的工具栏插槽 `conversation.input.left`。按钮会在权限/Plan 附近，**功能一样**，可以选库、上传、管知识。
+
+两种宿主都只要装这一个插件。
+
+## 安装（给别人用）
+
+在 **web profile** 里安装，然后重启 `dsh web`。新建会话时选「数据模式」。
+
+GitHub（把 `<you>` 换成仓库地址）：
 
 ```sh
-# 本地 tarball（发布物含 lib/）
-dsh plugin --profile web add ./dsh-data-mode-0.1.0.tgz
-
-# 或 npm / github（github 源会跑 prepare 编译）
 dsh plugin --profile web add github:<you>/dsh-data-mode
+```
+
+或下载 Releases 里的 `.tgz`（已含编译结果，不必本地跑 tsdown）：
+
+```sh
+dsh plugin --profile web add ./dsh-data-mode-0.1.0.tgz
+```
+
+本机开发：
+
+```sh
 dsh plugin --profile web add link:/path/to/dsh-data-mode
 ```
 
-查询引擎是可选依赖 `duckdb`（原生 addon）。**装上之后，SQLite / XLSX / CSV / Parquet / PostgreSQL / MySQL 都走 DuckDB**；没编出 native 绑定时，SQLite 与纯 XLSX 仍回退到 Node 内置 SQLite / 本地解析，示例问数不受影响。
+查询引擎是可选依赖 `duckdb`。编出 native 后，SQLite / XLSX / CSV / Parquet / PostgreSQL / MySQL 都走 DuckDB；没编出来时，SQLite 和纯 XLSX 仍可用。
 
-**pnpm 10+ 会在安装时询问是否允许编译**；不先回答的话 `dsh plugin add` 会一直停住。请先选一种：
+pnpm 10+ 安装时若询问是否编译 `duckdb`，请先选好，否则 `dsh plugin add` 会卡住：
 
 ```sh
-# 需要 CSV / Parquet / Postgres / MySQL，以及用 DuckDB 统一查所有源
+# 需要 CSV / Parquet / Postgres / MySQL
 pnpm config set allowBuilds.duckdb true
 
-# 只想先装上预设、稍后再编 duckdb（SQLite / XLSX 示例仍可用）
+# 只想先用 SQLite / XLSX 示例
 pnpm config set allowBuilds.duckdb false
 ```
 
-或在该 web profile 的 `pnpm-workspace.yaml` 里写：
+也可在该 web profile 的 `pnpm-workspace.yaml` 里写：
 
 ```yaml
 allowBuilds:
   duckdb: true
 ```
 
-然后重启 `dsh web`。新建会话时选择「数据模式」。不要改四个随附预设目录。
+## 怎么用
 
-## 问数（v1）
+1. 新建会话，选 **数据模式**。
+2. 点输入框工具栏上的 **数据源** 按钮，选中一个库或文件。没选中时，AI 看不见任何表。
+3. 直接问数。AI 只会跑只读 SQL。
 
-选「数据模式」后，**先在数据源按钮里选中一个数据库或数据文件**，问数工具才看得到它。未选中的源对 Agent 不可见，也不能 `describe` / `preview` / `run_sql`。
+按钮里还可以：连接 PostgreSQL / MySQL / SQLite、上传 CSV / XLSX、维护该源的业务知识（问数时按关键词带回口径）。
 
-输入框左下角 **命令（+）** 和 **只读/读写/全权限** 之间会出现数据库图标按钮（仅数据模式）。未选用时是浅色，选中某个数据源后高亮。点击后可以：
-
-- **自定义连接数据库**：PostgreSQL、MySQL、SQLite（密码写在 `$DSH_HOME/data-mode/secrets.yaml`，不进 catalog）
-- **自定义上传数据表**：`.csv` / `.xlsx`，落到工作区 `.dsh/data-mode/uploads/`
-- **数据源管理**：选用或删除已经连接 / 上传的源；内置 SQLite / XLSX 示例始终出现在列表里
-
-数据源目录仍是 YAML，给 UI 写入、Agent 读取：
+密码写在 `$DSH_HOME/data-mode/secrets.yaml`，不进目录文件。
 
 | 文件 | 作用 |
 | --- | --- |
-| `$DSH_HOME/data-mode/catalog.yaml` | 进程级数据源目录 |
+| `$DSH_HOME/data-mode/catalog.yaml` | 数据源目录 |
 | `<workspace>/.dsh/data-mode/catalog.yaml` | 工作区覆盖（同 id 覆盖 home） |
 | `$DSH_HOME/data-mode/selections.yaml` | 当前会话选中的 sourceId |
+| `$DSH_HOME/data-mode/knowledge/<sourceId>.json` | 该源的业务知识 |
 
-字段约定见 [`examples/catalog.yaml`](examples/catalog.yaml)。内置 `demo-sqlite` / `demo-xlsx` 会在 catalog 为空时自动注入。工作区 CSV / XLSX 需要在弹窗里上传，不会再隐式扫描 `workspace-files`。
+字段约定见 [`examples/catalog.yaml`](examples/catalog.yaml)。目录为空时会自动出现内置 `demo-sqlite` / `demo-xlsx`。
 
-**没有语义层**：不维护认证指标、不编译口径、不提供 `metrics.yaml`。每次回答写清本次用的公式即可。
+**没有语义层**：不维护官方指标表。每次回答写清本次用的公式即可。
 
-## 支持 / 不支持
+## 隔离保证
 
-**支持**
+安装 **不会**：
 
-- 上传 CSV / XLSX / 工作区 Parquet：DuckDB 只读 SQL（每个源独立内存库，表名互不覆盖）
-- PostgreSQL / MySQL：DuckDB `ATTACH`（扩展需能 INSTALL/LOAD；Postgres 勾选 SSL 会加 `sslmode=require`）
-- SQLite：DuckDB 已有 sqlite 扫描扩展时 `ATTACH`；否则立即回退 Node `node:sqlite`，示例预览和问数不变
-- DuckDB native 不可用时：SQLite 与纯 XLSX 回退 Node 查询
-- 数据模式输入框数据源按钮（选中高亮）
-- 默认 LIMIT 200，硬顶 5000；`run_sql` 前必须 `describe_schema`
-- A 拒答 / B 问数 / B+ 排名占比趋势 / C 归因 SOP 与数据分析 Plan Mode
-- 从官方 `@deepseek-ai/dsh` 或 custom dsh 用 plugin add 安装 tarball；卸载后原生模式不变
+- 修改 `agent-presets.default`
+- 改 host 上的 `id: agent-presets` 行
+- 让标准 / PTC / 极简 / 创造看到 `run_sql`
+- 覆盖你已经有的预设目录
 
-数据源按钮需要宿主 composer 提供 `conversation.input.datasource` 插槽（custom dsh 已加；官方 dsh 尚未合入时按钮不会出现）。
+安装 **只会**：
 
-**不支持**
+- 在 web profile 挂 registrar（并挂数据源管理 HTTP）
+- 若 `$DSH_HOME/.agent-presets/dsh-data` 不存在，则复制一份用户预设
+- 仅「数据模式」会话挂问数工具和数据源按钮
 
-- 语义层（认证指标、metrics.yaml、口径编译）
-- MongoDB / Oracle / SQL Server / Snowflake 等非 DuckDB 易 ATTACH 的引擎
-- 图表仪表盘、行级权限、实时 OLAP、独立 ML 预测
-- 改 dsh 四个随附预设；把目录做成模型可写工具
+预设 id 是 `dsh-data`。卸载不影响原生模式。
 
 ## 卸载
 
@@ -104,4 +108,12 @@ allowBuilds:
 dsh plugin --profile web remove dsh-data-mode
 ```
 
-可选：删除 `$DSH_HOME/.agent-presets/dsh-data`。删除后 roster 里不再出现该预设；原生模式不受影响。
+可选：删除 `$DSH_HOME/.agent-presets/dsh-data`。
+
+## 维护者：打 GitHub 发布包
+
+```sh
+npm run pack:release
+```
+
+得到 `dsh-data-mode-0.1.0.tgz`（含 `lib/`）。把源码仓库推到 GitHub，把这个 tarball 挂到 Release，别人就可以按上面的命令安装。

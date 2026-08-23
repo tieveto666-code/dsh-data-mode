@@ -108,6 +108,15 @@ describe('registrar source isolation', () => {
     expect(client).toContain("onKnowledge")
     expect(client).toContain("action.knowledge")
   })
+
+  it('occupies the dedicated datasource seat and falls back to conversation.input.left', () => {
+    const client = readFileSync(join(root, 'src/client/index.ts'), 'utf8')
+    expect(client).toContain("inject('conversation.input.datasource'")
+    expect(client).toContain("inject('conversation.input.left'")
+    expect(client).toContain("id: LEFT_ENTRY_ID")
+    expect(client).not.toContain('deepseek-harness-custom')
+    expect(client).not.toContain('InputBar.tsx')
+  })
 })
 
 describe('native standard preset stays free of data tools', () => {
