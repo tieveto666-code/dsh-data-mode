@@ -4,6 +4,15 @@
   "description": "DSH 数据模式插件：在原版 DeepSeek Harness 上增加只读问数。连接数据库或上传 CSV/Excel，用自然语言查数。不改标准/PTC/极简/创造。",
   "type": "module",
   "license": "MIT",
+  "author": "Changsheng Tie (tieveto666-code)",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/tieveto666-code/dsh-data-mode.git"
+  },
+  "bugs": {
+    "url": "https://github.com/tieveto666-code/dsh-data-mode/issues"
+  },
+  "homepage": "https://github.com/tieveto666-code/dsh-data-mode#readme",
   "engines": {
     "node": "^22.19.0 || >=24.0.0"
   },

@@ -4,7 +4,7 @@ A DeepSeek Harness (DSH) plugin that adds a **Data Mode** session type for **rea
 
 Connect PostgreSQL, MySQL, or SQLite, or upload CSV / Excel files. Ask questions in natural language. The agent inspects schema, previews rows, and runs read-only SQL. You can also attach business definitions (metrics, aliases, formulas) to each source so answers follow your vocabulary.
 
-The plugin is meant for **stock DSH**. It does not change the built-in Standard, PTC, Minimal, or Creative presets, and those sessions never see the SQL tools. New chats still default to Standard Mode.
+The plugin is meant for **stock DSH** (web UI). It does not change the built-in Standard, PTC, Minimal, or Creative presets, and those sessions never see the SQL tools. New chats still default to Standard Mode. The Data source panel is localized in **Chinese and English**.
 
 ## Preview
 
@@ -37,7 +37,7 @@ Typical uses:
 From the composer **Data source** control (visible only in Data Mode):
 
 - Connect **PostgreSQL**, **MySQL**, or **SQLite**
-- Upload **CSV** or **XLSX** tables into the workspace
+- Upload **CSV** or **XLSX** tables into the workspace (the query engine can also read CSV / Parquet / XLSX when DuckDB is available)
 - Preview tables and sample rows before asking
 - Select exactly one source for the current session (unselected sources are invisible to the agent)
 - Remove a registered source (its knowledge file is removed with it)
@@ -52,6 +52,7 @@ Each source has its own knowledge list (key → one or more values). Use it for 
 
 - Create, edit, search, paginate, bulk-delete, and export to XLSX in the panel
 - The same key may have multiple values
+- Limits: key ≤ 100 characters, value ≤ 1000 characters, 200 entries per source
 - On each question, matching keys are recalled (exact key in the question always hits; otherwise BM25 on keys) and injected into the system prompt as **口径**
 - Knowledge never replaces real table or column names; the agent must still describe schema before SQL
 
@@ -182,9 +183,17 @@ dsh plugin --profile web remove dsh-data-mode
 
 Optional: delete `$DSH_HOME/.agent-presets/dsh-data`. Native presets are unchanged.
 
+Issues: [github.com/tieveto666-code/dsh-data-mode/issues](https://github.com/tieveto666-code/dsh-data-mode/issues)
+
 ## Limits
 
 - Read-only SQL only; no `INSERT` / `UPDATE` / `DELETE` / DDL through the agent
 - No certified semantic layer (`metrics.yaml` / compiled 口径)
 - No MongoDB, Oracle, SQL Server, Snowflake, dashboards, row-level security, or streaming OLAP
 - Knowledge is lexical retrieval on keys, not a full document search engine
+
+## License
+
+MIT © Changsheng Tie (tieveto666-code)
+
+See [LICENSE](./LICENSE).
